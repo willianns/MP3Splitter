@@ -70,7 +70,7 @@ splitButton.Clicked += () =>
 	var processStartInfo = new ProcessStartInfo();
 	processStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 	processStartInfo.FileName = "ffmpeg";
-	processStartInfo.Arguments = "git status";
+	processStartInfo.Arguments = "-i somefile.mp3 -f segment -segment_time 3 -c copy out%03d.mp3";
 	processStartInfo.RedirectStandardOutput = true;
 	processStartInfo.RedirectStandardError = true;
 

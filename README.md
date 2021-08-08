@@ -2,16 +2,21 @@
 
 Simple tool to use ffmpeg to split a full mp3 song in multiple mp3 tracks and top level programs in C# as a POC
 
-### How to build
+### How to build (Windows, Linux)
 
 Just run dotnet build or publish
+
+### Requirements
+
+Windows - ffmpeg executables can be downloaded at official website https://www.ffmpeg.org/
+Linux (Ubuntu) - Just run 'sudo apt install ffmpeg' to grab the dependency
 
 ### Usage 
 
 mp3splitter.exe my_file.mp3 [options]
 
 Options:
--f 'required path for ffmpeg executable windows'
+-f 'required path for ffmpeg executable - for Windows only'
 
 Info: Please note the need to provide in the same path of mp3 file a txt file
 withing same name (eg. my_file.txt) containing the tracks specification per line in the following format;

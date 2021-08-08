@@ -10,7 +10,7 @@ if (args.Length == 0)
     usage: mp3splitter.exe my_file.mp3 [options]
 
       Options:
-      -f <required path for ffmpeg executable windows>
+      -f <required path for ffmpeg executable - for Windows only>
 
       =========================================================================================================
       Info: Please note the need to provide in the same path of mp3 file a txt file 

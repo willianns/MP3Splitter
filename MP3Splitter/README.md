@@ -13,7 +13,6 @@ mp3splitter.exe my_file.mp3 [options]
 Options:
 -f <required path for ffmpeg executable windows>
 
-=========================================================================================================
 Info: Please note the need to provide in the same path of mp3 file a txt file
 withing same name (eg. my_file.txt) containing the tracks specification per line in the following format;
 The tracks will be generated in the same mp3 source folder.
@@ -21,7 +20,6 @@ The tracks will be generated in the same mp3 source folder.
 Format: {start time} {end time} {trackname without special chars}
 
 Example: hh:mm:ss hh:mm:ss my trackname
-=========================================================================================================
 
 ### License
 

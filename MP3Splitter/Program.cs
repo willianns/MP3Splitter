@@ -1,88 +1,85 @@
-﻿using System.Diagnostics;
+﻿using MP3Splitter;
+using System;
+using System.Diagnostics;
 using System.IO;
-using Terminal.Gui;
 
-Application.Init();
-
-var top = Application.Top;
-
-var win = new Window("MP3 Splitter")
+// validate file
+if (args.Length == 0)
 {
-	X = 0,
-	Y = 0, 
-	Width = Dim.Fill(),
-	Height = Dim.Fill()
-};
-top.Add(win);
+    Console.WriteLine(@"
+    usage: mp3splitter.exe my_file.mp3 [options]
 
-var arquivo = new Label("File: ") { X = 3, Y = 2 };
+      Options:
+      -f <required path for ffmpeg executable windows>
 
-var faixas = new Label("Tracks / format per line -> {start 00:00} {track name}: ")
+      =========================================================================================================
+      Info: Please note the need to provide in the same path of mp3 file a txt file 
+      withing same name (eg. my_file.txt) containing the tracks specification per line in the following format;
+      The tracks will be generated in the same mp3 source folder.      
+
+      Format: {start time} {end time} {trackname without special chars}
+      
+      Example: hh:mm:ss hh:mm:ss my trackname
+      =========================================================================================================
+    ");
+    return;
+}
+
+var mp3SourceFile = args[0];
+
+if (!File.Exists(mp3SourceFile))
 {
-	X = Pos.Left(arquivo),
-	Y = Pos.Top(arquivo) + 2
-};
+    Console.WriteLine($"Invalid file {mp3SourceFile}");
+    return;
+}
 
-var arquivoText = new TextField()
+// validate ffmpeg folder
+var ffmpeg_path = "ffmpeg";
+if (args.Length > 1 && args[1] == "-f")
 {
-	Width = 80
-};
+    ffmpeg_path = args[2];
 
-var arquivoButton = new Button()
+    if (!File.Exists(ffmpeg_path))
+    {
+        Console.WriteLine($"Invalid ffmpeg path {ffmpeg_path}");
+        return;
+    }
+}
+
+// file folder path
+var mp3Path = Path.GetDirectoryName(mp3SourceFile);
+
+var trackList = new TrackList();
+var formattedTrackList = File.ReadAllText(Path.ChangeExtension(mp3SourceFile, "txt")).Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+trackList.Parse(formattedTrackList);
+
+foreach (var faixa in trackList.Tracks)
 {
-	X = Pos.Right(arquivo),
-	Y = Pos.Top(arquivo),
-	Text = "..."
-};
-arquivoButton.Clicked += () => 
-{
-	var d = new OpenDialog("Open", "Open a music file") { AllowedFileTypes = new[] { "mp3" } };
-	Application.Run(d);
+    //the track name cannot have special chars like ?, ', /, \
+    var processStartInfo = new ProcessStartInfo
+    {
+        WindowStyle = ProcessWindowStyle.Hidden,
+        FileName = ffmpeg_path,
+        Arguments = $"-ss {faixa.StartTime} -to {faixa.EndTime} -i \"{mp3SourceFile}\" -c: copy \"{Path.Combine(mp3Path, faixa.Name)}.mp3\"",
+        RedirectStandardOutput = true,
+        RedirectStandardError = true
+    };
 
-	if (!d.Canceled)
-	{
-		var arquivoTextFilename = d.FilePaths.Count > 0 ? d.FilePaths[0] : d.FilePath;
-		arquivoText.Text = Path.GetFileName(arquivoTextFilename.ToString());
-	}
-};
+    using var process = new Process();
+    //process.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { };
+    //process.Exited += (sender, e) => { };
 
-arquivoText.X = Pos.Right(arquivoButton) + 1;
-arquivoText.Y = Pos.Top(arquivoButton);
+    process.StartInfo = processStartInfo;
+    process.Start();
 
-var faixasText = new TextView()
-{
-	X = Pos.Left(arquivo),
-	Y = Pos.Bottom(faixas),
-	Width = 40,
-	Height = 6,
-	Multiline = true,
-	ColorScheme = new ColorScheme 
-	{ 
-		Normal = new Attribute(Color.Black, Color.Gray) 
-	}
-};
+    process.WaitForExit();
 
-var splitButton = new Button(3, 12, "Split");
-splitButton.Clicked += () => 
-{
-	var process = new Process();
-
-	var processStartInfo = new ProcessStartInfo();
-	processStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-	processStartInfo.FileName = "ffmpeg";
-	processStartInfo.Arguments = "-i somefile.mp3 -f segment -segment_time 3 -c copy out%03d.mp3";
-	processStartInfo.RedirectStandardOutput = true;
-	processStartInfo.RedirectStandardError = true;
-
-	process.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { };
-	process.Exited += (sender, e) => { };
-
-	process.StartInfo = processStartInfo;
-	process.Start();
-};
-
-win.Add(
-	arquivo, faixas, arquivoButton, arquivoText, faixasText, splitButton
-); ;
-
-Application.Run();
+    if (process.ExitCode == 0)
+    {
+        Console.WriteLine($"track \"{faixa.Name}\" extracted");
+    }
+    else
+    {
+        Console.WriteLine($"error on track \"{faixa.Name}\"");
+    }
+}

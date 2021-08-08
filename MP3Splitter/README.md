@@ -11,7 +11,7 @@ Just run dotnet build or publish
 mp3splitter.exe my_file.mp3 [options]
 
 Options:
--f <required path for ffmpeg executable windows>
+-f 'required path for ffmpeg executable windows'
 
 Info: Please note the need to provide in the same path of mp3 file a txt file
 withing same name (eg. my_file.txt) containing the tracks specification per line in the following format;

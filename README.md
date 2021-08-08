@@ -9,6 +9,7 @@ Just run dotnet build or publish
 ### Requirements
 
 Windows - ffmpeg executables can be downloaded at official website https://www.ffmpeg.org/
+
 Linux (Ubuntu) - Just run 'sudo apt install ffmpeg' to grab the dependency
 
 ### Usage 

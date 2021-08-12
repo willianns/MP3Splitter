@@ -13,8 +13,8 @@ if (args.Length == 0)
       -f <required path for ffmpeg executable - for Windows only>
 
       =========================================================================================================
-      Info: Please note the need to provide in the same path of mp3 file a txt file 
-      withing same name (eg. my_file.txt) containing the tracks specification per line in the following format;
+      Info: Note the need to have a txt file in the same path as the mp3 file
+      with the same name (eg my_file.txt) containing the specification of the ranges per line in the following format;
       The tracks will be generated in the same mp3 source folder.      
 
       Format: {start time} {end time} {trackname without special chars}
